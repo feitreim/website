@@ -7,6 +7,7 @@ use tokio::net::{TcpListener, TcpStream};
 const OUT_DIR: &str = "dist";
 const POSTS_DIR: &str = "posts";
 const MAIN_PAGE: &str = "main.md";
+const STATIC_DIR: &str = "static";
 
 #[tokio::main]
 async fn main() {
@@ -51,8 +52,21 @@ fn build() {
     fs::write(format!("{OUT_DIR}/index.html"), render_index(&posts)).unwrap();
     fs::write(format!("{OUT_DIR}/style.css"), STYLE).unwrap();
     fs::write(format!("{OUT_DIR}/favicon.svg"), FAVICON).unwrap();
+    copy_static();
 
     println!("built {} posts -> {OUT_DIR}/", posts.len());
+}
+
+/// Copy verbatim assets (fonts, etc.) from static/ into the output dir.
+fn copy_static() {
+    let Ok(entries) = fs::read_dir(STATIC_DIR) else { return };
+    for entry in entries.filter_map(Result::ok) {
+        let path = entry.path();
+        if path.is_file() {
+            let dest = format!("{OUT_DIR}/{}", entry.file_name().to_string_lossy());
+            fs::copy(&path, dest).unwrap();
+        }
+    }
 }
 
 fn read_post(path: PathBuf) -> Option<Post> {
@@ -239,10 +253,30 @@ const FAVICON: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1
 "##;
 
 const STYLE: &str = r#"
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/BerkeleyMono-Regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/BerkeleyMono-Bold.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/BerkeleyMono-Italic.woff2') format('woff2');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/BerkeleyMono-BoldItalic.woff2') format('woff2');
+  font-weight: 700; font-style: italic; font-display: swap;
+}
 :root { --fg: #1a1a1a; --muted: #666; --link: #2563eb; --bg: #fdfdfc; }
 * { box-sizing: border-box; }
 body {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: 'Berkeley Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   line-height: 1.65; color: var(--fg); background: var(--bg);
   margin: 0; padding: 0;
 }
@@ -255,7 +289,7 @@ h1 { margin-top: 0; }
 ul.posts { list-style: none; padding: 0; }
 ul.posts li { margin: 0.4rem 0; font-size: 1.05rem; }
 code {
-  font-family: 'SF Mono', Menlo, monospace; font-size: 0.9em;
+  font-family: 'Berkeley Mono', ui-monospace, Menlo, monospace; font-size: 0.9em;
   background: #f0f0ee; padding: 0.1em 0.3em; border-radius: 3px;
 }
 pre {
@@ -327,6 +361,8 @@ fn content_type(path: &Path) -> &'static str {
         Some("css") => "text/css; charset=utf-8",
         Some("js") => "text/javascript; charset=utf-8",
         Some("svg") => "image/svg+xml",
+        Some("woff2") => "font/woff2",
+        Some("woff") => "font/woff",
         Some("png") => "image/png",
         Some("jpg") | Some("jpeg") => "image/jpeg",
         _ => "application/octet-stream",

@@ -9,3 +9,6 @@
 
 # Editor / vault config
 /.obsidian
+
+# Licensed fonts — served from the site, NOT redistributed via this repo
+/static
