@@ -12,8 +12,8 @@ A bare-bones static site generator + web server in one Rust binary.
 ```sh
 cargo build --release
 
-./target/release/blog build        # generate dist/
-./target/release/blog serve 8000   # build, then serve dist/ on 0.0.0.0:8000
+./target/release/website build        # generate dist/
+./target/release/website serve 8000   # build, then serve dist/ on 0.0.0.0:8000
 ```
 
 Writing a new post = drop a `.md` file in `posts/` and re-run `build`. The title
@@ -24,14 +24,14 @@ comes from the filename; the URL slug is the lowercased, hyphenated filename.
 ```sh
 # on the VPS, with the repo checked out and Rust installed:
 cargo build --release
-./target/release/blog serve 80      # needs root/cap for port 80
+./target/release/website serve 80      # needs root/cap for port 80
 ```
 
-To keep it running, drop a systemd unit at `/etc/systemd/system/bearblog.service`:
+To keep it running, drop a systemd unit at `/etc/systemd/system/website.service`:
 
 ```ini
 [Unit]
-Description=bearblog
+Description=website
 After=network.target
 
 [Service]
