@@ -227,10 +227,14 @@ fn render_page(title: &str, body: &str) -> String {
     )
 }
 
-// A rounded blue tile with a serif "F", reusing the site's palette and font.
+// A lowercase serif "f" on a transparent ground; flips color to stay visible
+// on light or dark tab bars.
 const FAVICON: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="22" fill="#2563eb"/>
-  <text x="50" y="54" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="700" fill="#fdfdfc" text-anchor="middle" dominant-baseline="central">F</text>
+  <style>
+    text { fill: #1a1a1a; }
+    @media (prefers-color-scheme: dark) { text { fill: #fdfdfc; } }
+  </style>
+  <text x="50" y="54" font-family="Georgia, 'Times New Roman', serif" font-size="84" font-weight="700" text-anchor="middle" dominant-baseline="central">f</text>
 </svg>
 "##;
 
