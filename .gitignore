@@ -1,0 +1,11 @@
+# Rust build artifacts
+/target
+
+# Generated site output
+/dist
+
+# Unpublished drafts
+/future_posts
+
+# Editor / vault config
+/.obsidian
