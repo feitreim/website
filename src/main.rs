@@ -50,6 +50,7 @@ fn build() {
 
     fs::write(format!("{OUT_DIR}/index.html"), render_index(&posts)).unwrap();
     fs::write(format!("{OUT_DIR}/style.css"), STYLE).unwrap();
+    fs::write(format!("{OUT_DIR}/favicon.svg"), FAVICON).unwrap();
 
     println!("built {} posts -> {OUT_DIR}/", posts.len());
 }
@@ -201,6 +202,7 @@ fn render_page(title: &str, body: &str) -> String {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -224,6 +226,13 @@ fn render_page(title: &str, body: &str) -> String {
         body = body
     )
 }
+
+// A rounded blue tile with a serif "F", reusing the site's palette and font.
+const FAVICON: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="22" fill="#2563eb"/>
+  <text x="50" y="54" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="700" fill="#fdfdfc" text-anchor="middle" dominant-baseline="central">F</text>
+</svg>
+"##;
 
 const STYLE: &str = r#"
 :root { --fg: #1a1a1a; --muted: #666; --link: #2563eb; --bg: #fdfdfc; }
