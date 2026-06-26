@@ -1,8 +1,7 @@
 # Finn's Blog
 
-Notes on machine learning, math, and whatever else I'm thinking about.
-I write to understand things — mostly the math behind ML, sometimes opinions.
+Writing about whatever I want, but probably machine learning or programming.
 
-You can reach me at feitreim0@gmail.com.
+You can reach me at feitreim@gmail.com.
 
 {{posts}}
