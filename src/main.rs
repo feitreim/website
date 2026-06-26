@@ -248,7 +248,7 @@ const FAVICON: &str = r##"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1
     text { fill: #1a1a1a; }
     @media (prefers-color-scheme: dark) { text { fill: #fdfdfc; } }
   </style>
-  <text x="50" y="54" font-family="Georgia, 'Times New Roman', serif" font-size="84" font-weight="700" text-anchor="middle" dominant-baseline="central">f</text>
+  <text x="50" y="54" font-family="ui-monospace, 'SF Mono', Menlo, monospace" font-size="84" font-weight="700" text-anchor="middle" dominant-baseline="central">f</text>
 </svg>
 "##;
 
@@ -260,18 +260,28 @@ const STYLE: &str = r#"
 }
 @font-face {
   font-family: 'Berkeley Mono';
+  src: url('/BerkeleyMono-Oblique.woff2') format('woff2');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Berkeley Mono';
   src: url('/BerkeleyMono-Bold.woff2') format('woff2');
   font-weight: 700; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'Berkeley Mono';
-  src: url('/BerkeleyMono-Italic.woff2') format('woff2');
-  font-weight: 400; font-style: italic; font-display: swap;
+  src: url('/BerkeleyMono-Bold-Oblique.woff2') format('woff2');
+  font-weight: 700; font-style: italic; font-display: swap;
 }
 @font-face {
   font-family: 'Berkeley Mono';
-  src: url('/BerkeleyMono-BoldItalic.woff2') format('woff2');
-  font-weight: 700; font-style: italic; font-display: swap;
+  src: url('/BerkeleyMono-Black.woff2') format('woff2');
+  font-weight: 900; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Berkeley Mono';
+  src: url('/BerkeleyMono-Black-Oblique.woff2') format('woff2');
+  font-weight: 900; font-style: italic; font-display: swap;
 }
 :root { --fg: #1a1a1a; --muted: #666; --link: #2563eb; --bg: #fdfdfc; }
 * { box-sizing: border-box; }
@@ -283,7 +293,7 @@ body {
 main { max-width: 42rem; margin: 0 auto; padding: 3rem 1.25rem 6rem; }
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
-h1, h2, h3 { line-height: 1.25; font-weight: 700; }
+h1, h2, h3 { line-height: 1.25; font-weight: 900; }
 h1 { margin-top: 0; }
 .nav a { color: var(--muted); font-size: 0.9rem; }
 ul.posts { list-style: none; padding: 0; }
