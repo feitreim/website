@@ -1,3 +1,5 @@
+# You should be nicer to your LLMs
+
 ## Thesis
 You should treat LLMs with respect and dignity, not for vague, emotional
 reasons, but because LLMs, like us, do a better job when treated with respect

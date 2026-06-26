@@ -60,11 +60,16 @@ fn read_post(path: PathBuf) -> Option<Post> {
         return None; // skip empty drafts so we don't ship dead links
     }
     let stem = path.file_stem()?.to_string_lossy().into_owned();
-    Some(Post {
-        title: humanize(&stem),
-        slug: slugify(&stem),
-        body,
-    })
+    let title = title_from_markdown(&body).unwrap_or_else(|| humanize(&stem));
+    let slug = slugify(&title);
+    Some(Post { title, slug, body })
+}
+
+/// The post title is its first level-1 heading (`# ...`); the filename is only a fallback.
+fn title_from_markdown(src: &str) -> Option<String> {
+    src.lines()
+        .map(str::trim)
+        .find_map(|line| line.strip_prefix("# ").map(|t| t.trim().to_string()))
 }
 
 fn render_index(posts: &[Post]) -> String {

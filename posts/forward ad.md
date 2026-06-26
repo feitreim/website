@@ -1,3 +1,5 @@
+# Forward Mode Automatic Differentiation
+
 ## Introduction
 Automatic Differentiation(AD) is a core algorithm in modern machine learning, implementations like Torch's [autograd](https://pytorch.org/blog/overview-of-pytorch-autograd-engine/) and JAX's [jax.grad](https://docs.jax.dev/en/latest/automatic-differentiation.html) dominate the space. autograd and jax.grad both primarily compute derivatives using back propagation (backprop), a case of backwards mode AD.  Forward mode automatic differentiation is effectively the opposite of backwards mode, we calculate the derivatives 
 $$

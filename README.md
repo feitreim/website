@@ -17,7 +17,8 @@ cargo build --release
 ```
 
 Writing a new post = drop a `.md` file in `posts/` and re-run `build`. The title
-comes from the filename; the URL slug is the lowercased, hyphenated filename.
+comes from the post's first `# ` heading; the URL slug is that title, lowercased
+and hyphenated. (If a post has no `# ` heading, the filename is used instead.)
 
 ## Deploying to a VPS
 
@@ -36,12 +37,21 @@ After=network.target
 
 [Service]
 WorkingDirectory=/path/to/blog
-ExecStart=/path/to/blog/target/release/blog serve 8000
+ExecStart=/path/to/blog/target/release/website serve 8000
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-Then `systemctl enable --now bearblog`. Put nginx/caddy in front for TLS, or
+Then `systemctl enable --now website`. Put nginx/caddy in front for TLS, or
 point it at port 8000 directly.
+
+### Redeploying
+
+The systemd unit's `ExecStart` rebuilds from the latest checkout on every start,
+so after pushing changes just restart the service on the VPS:
+
+```sh
+ssh root@<your-vps> 'systemctl restart website'
+```

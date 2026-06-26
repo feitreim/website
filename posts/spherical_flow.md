@@ -1,4 +1,4 @@
-# Spherical Latents + Few-Step Flow Refinement
+# Spherical Flow Models
 
 ## Inspiration
 
