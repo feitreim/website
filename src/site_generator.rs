@@ -395,7 +395,7 @@ const STYLE: &str = r#"
 }
 /* Evergarden Summer */
 :root {
-  --fg: #2b3034; --muted: #829084; --link: #8294ad; --bg: #f5efe6;
+  --fg: #2b3034; --muted: #829084; --link: #8fbab5; --bg: #f5efe6;
   --surface: #e6e1d3; --border: #ceccbd;
 }
 * { box-sizing: border-box; }
