@@ -1,4 +1,4 @@
-# bearblog
+# personal website
 
 A bare-bones static site generator + web server in one Rust binary.
 
