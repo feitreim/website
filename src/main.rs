@@ -308,6 +308,7 @@ fn render_page(title: &str, body: &str) -> String {
 <p class="nav"><a href="/">home</a></p>
 {body}
 </main>
+<p class="accred"><a href="https://github.com/sainnhe/everforest">everforest</a> light</p>
 </body>
 </html>
 "#,
@@ -358,7 +359,11 @@ const STYLE: &str = r#"
   src: url('/BerkeleyMono-Black-Oblique.woff2') format('woff2');
   font-weight: 900; font-style: italic; font-display: swap;
 }
-:root { --fg: #1a1a1a; --muted: #666; --link: #2563eb; --bg: #fdfdfc; }
+/* Everforest Light (Medium) */
+:root {
+  --fg: #5c6a72; --muted: #829181; --link: #3a94c5; --bg: #fffbef;
+  --surface: #f2efdf; --border: #bec5b2;
+}
 * { box-sizing: border-box; }
 body {
   font-family: 'Berkeley Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -376,16 +381,21 @@ ul.posts li { margin: 0.4rem 0; font-size: 1.05rem; }
 .post-date { color: var(--muted); font-size: 0.9em; margin-left: 0.4rem; }
 code {
   font-family: 'Berkeley Mono', ui-monospace, Menlo, monospace; font-size: 0.9em;
-  background: #f0f0ee; padding: 0.1em 0.3em; border-radius: 3px;
+  background: var(--surface); padding: 0.1em 0.3em; border-radius: 3px;
 }
 pre {
-  background: #f0f0ee; padding: 1rem; border-radius: 6px; overflow-x: auto;
+  background: var(--surface); padding: 1rem; border-radius: 6px; overflow-x: auto;
 }
 pre code { background: none; padding: 0; }
 blockquote {
-  border-left: 3px solid #ddd; margin-left: 0; padding-left: 1rem; color: var(--muted);
+  border-left: 3px solid var(--border); margin-left: 0; padding-left: 1rem; color: var(--muted);
 }
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; }
+.accred {
+  position: fixed; bottom: 0.6rem; right: 0.75rem;
+  font-size: 0.72rem; color: var(--muted);
+}
+.accred a { color: var(--muted); }
 "#;
 
 // --- web server ---------------------------------------------------------
