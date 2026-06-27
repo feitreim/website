@@ -1,4 +1,6 @@
 # You should be nicer to your LLMs
+### date: 14 Apr, 2026
+
 
 ## Thesis
 You should treat LLMs with respect and dignity, not for vague, emotional
