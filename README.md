@@ -1,6 +1,6 @@
 # personal website
 
-A bare-bones static site generator + web server in one Rust binary.
+A bare-bones static site generator + web server in one.
 
 - `posts/*.md` → `dist/posts/*.html`
 - `main.md` → `dist/index.html` (the `{{posts}}` marker is replaced by the auto-generated post list)
@@ -53,5 +53,7 @@ The systemd unit's `ExecStart` rebuilds from the latest checkout on every start,
 so after pushing changes just restart the service on the VPS:
 
 ```sh
-ssh root@<your-vps> 'systemctl restart website'
+ssh <your-vps> 'systemctl restart website'
 ```
+
+its aliased as `update-website`
