@@ -6,9 +6,13 @@
 
 # Unpublished drafts
 /future_posts
+/drafts
 
 # Editor / vault config
 /.obsidian
 
 # Licensed fonts — served from the site, NOT redistributed via this repo
 /static
+
+# macos stuff
+.DS_Store
