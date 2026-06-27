@@ -384,7 +384,8 @@ code {
   background: var(--surface); padding: 0.1em 0.3em; border-radius: 3px;
 }
 pre {
-  background: var(--surface); padding: 1rem; border-radius: 6px; overflow-x: auto;
+  background: var(--surface); padding: 1rem; border-radius: 6px;
+  white-space: pre-wrap; overflow-wrap: anywhere;
 }
 pre code { background: none; padding: 0; }
 blockquote {
