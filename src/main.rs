@@ -2,6 +2,9 @@ use std::cmp::Ordering;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use ratex_layout::LayoutOptions;
+use ratex_svg::SvgOptions;
+use ratex_types::{color::Color, math_style::MathStyle};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::{TcpListener, TcpStream};
 
@@ -9,6 +12,9 @@ const OUT_DIR: &str = "dist";
 const POSTS_DIR: &str = "posts";
 const MAIN_PAGE: &str = "main.md";
 const STATIC_DIR: &str = "static";
+
+/// Math glyph color, kept in sync with `--fg` in STYLE.
+const MATH_COLOR: &str = "#2b3034";
 
 #[tokio::main]
 async fn main() {
@@ -185,7 +191,7 @@ fn render_index(posts: &[Post]) -> String {
 
 // --- markdown + math ----------------------------------------------------
 
-/// Convert markdown to HTML, keeping LaTeX math intact for client-side KaTeX.
+/// Convert markdown to HTML, rendering LaTeX math to self-contained SVG at build time.
 fn md_to_html(src: &str) -> String {
     let (protected, math) = protect_math(src);
 
@@ -237,9 +243,59 @@ fn protect_math(src: &str) -> (String, Vec<String>) {
 
 fn restore_math(mut html: String, spans: &[String]) -> String {
     for (idx, raw) in spans.iter().enumerate() {
-        html = html.replace(&format!("MATHSPAN{idx}END"), raw);
+        html = html.replace(&format!("MATHSPAN{idx}END"), &render_math(raw));
     }
     html
+}
+
+/// Render one protected `$...$` / `$$...$$` span to a self-contained inline SVG so pages
+/// ship no KaTeX CSS/JS and pull nothing from a CDN. Unparseable LaTeX falls back to the
+/// raw source shown as code.
+fn render_math(span: &str) -> String {
+    let display = span.starts_with("$$");
+    let latex = span.trim_matches('$');
+    math_to_svg(latex, display).unwrap_or_else(|| format!("<code>{}</code>", escape(span)))
+}
+
+fn math_to_svg(latex: &str, display: bool) -> Option<String> {
+    let nodes = ratex_parser::parse(latex).ok()?;
+    let layout_opts = LayoutOptions {
+        style: if display { MathStyle::Display } else { MathStyle::Text },
+        color: Color::from_hex(MATH_COLOR)?,
+        ..Default::default()
+    };
+    let layout = ratex_layout::layout(&nodes, &layout_opts);
+    let list = ratex_layout::to_display_list(&layout);
+
+    // font_size (== em_px) of 1 and zero padding make the SVG viewBox carry raw em units,
+    // so the figure can be sized and baseline-aligned with plain CSS em values below.
+    let svg = ratex_svg::render_to_svg(
+        &list,
+        &SvgOptions {
+            font_size: 1.0,
+            padding: 0.0,
+            embed_glyphs: true,
+            ..Default::default()
+        },
+    );
+    Some(frame_math(svg, list.height + list.depth, list.depth, display))
+}
+
+/// Size the SVG in `em` (so it scales with surrounding text) and, for inline math, drop it by
+/// its depth so the math baseline sits on the text baseline. Display math is centered in a
+/// horizontally scrollable block.
+fn frame_math(svg: String, total_em: f64, depth_em: f64, display: bool) -> String {
+    if display {
+        let svg = style_svg(svg, &format!("height:{total_em:.4}em;width:auto"));
+        format!("<div class=\"math-display\">{svg}</div>")
+    } else {
+        let style = format!("height:{total_em:.4}em;width:auto;vertical-align:-{depth_em:.4}em");
+        style_svg(svg, &style)
+    }
+}
+
+fn style_svg(svg: String, style: &str) -> String {
+    svg.replacen("<svg ", &format!("<svg class=\"math\" style=\"{style}\" "), 1)
 }
 
 // --- string helpers -----------------------------------------------------
@@ -293,15 +349,6 @@ fn render_page(title: &str, body: &str) -> String {
 <title>{title}</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
-        onload="renderMathInElement(document.body, {{
-          delimiters: [
-            {{left: '$$', right: '$$', display: true}},
-            {{left: '$', right: '$', display: false}}
-          ]
-        }});"></script>
 </head>
 <body>
 <main>
@@ -391,8 +438,10 @@ pre code { background: none; padding: 0; }
 blockquote {
   border-left: 3px solid var(--border); margin-left: 0; padding-left: 1rem; color: var(--muted);
 }
-.katex { color: var(--fg); }
-.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; }
+svg.math { vertical-align: middle; }
+.math-display {
+  overflow-x: auto; overflow-y: hidden; text-align: center; padding: 0.5rem 0;
+}
 .accred {
   position: fixed; bottom: 0.6rem; right: 0.75rem;
   font-size: 0.72rem; color: var(--muted);

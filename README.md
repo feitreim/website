@@ -4,7 +4,7 @@ A bare-bones static site generator + web server in one.
 
 - `posts/*.md` → `dist/posts/*.html`
 - `main.md` → `dist/index.html` (the `{{posts}}` marker is replaced by the auto-generated post list)
-- LaTeX math (`$...$`, `$$...$$`) is rendered in the browser by KaTeX (loaded from a CDN)
+- LaTeX math (`$...$`, `$$...$$`) is rendered to self-contained SVG at build time by RaTeX (no client JS, no CDN)
 - Empty `.md` files are skipped
 
 ## Usage
