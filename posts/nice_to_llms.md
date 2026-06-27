@@ -24,7 +24,7 @@ distribution of human behaviors through text, it learns what inputs likely
 result in what outputs, and picks up many subtle intricacies present in human
 text.
 
-Years ago, the pretraining corpus was primarily sources like Wikipedia [1],
+Years ago, the pretraining corpus was primarily sources like Wikipedia [[1]](#ref-1),
 large, well maintained sources of consensus true data. However, today,
 pretraining data has expanded to include virtually all sources of human text
 that are reasonably available. Imprecisely, the purpose of a language model
@@ -72,7 +72,7 @@ workings of LLMs (and other models but right now you know where the
 money/attention is). This is the idea of a Persona. Personas are different
 characters that an LLM can act out, like characters from a book, in a model that
 hasn't had any post-training to refine a Persona like an Assistant, these
-personas could literally be characters from a book, movie or other media. [2]
+personas could literally be characters from a book, movie or other media. [[2]](#ref-2)
 When talking with an LLM you are talking to a persona, this is why techniques
 like prefixing prompts with 
 ```
@@ -108,6 +108,6 @@ word machine it turns out.
 
 
 ## Works Cited
-[1] HuggingFaceFW. "FineWeb: Decanting the Web for the Finest Text Data at Scale." [huggingface.co](https://huggingface.co/spaces/HuggingFaceFW/blogpost-fineweb-v1)
+<a id="ref-1"></a>[1] HuggingFaceFW. "FineWeb: Decanting the Web for the Finest Text Data at Scale." [huggingface.co](https://huggingface.co/spaces/HuggingFaceFW/blogpost-fineweb-v1)
 
-[2] Anthropic. "The Assistant Axis: Situating and Stabilizing the Character of Large Language Models." [anthropic.com](https://www.anthropic.com/research/assistant-axis)
+<a id="ref-2"></a>[2] Anthropic. "The Assistant Axis: Situating and Stabilizing the Character of Large Language Models." [anthropic.com](https://www.anthropic.com/research/assistant-axis)
