@@ -305,7 +305,7 @@ fn render_page(title: &str, body: &str) -> String {
 </head>
 <body>
 <main>
-<p class="nav"><a href="/">home</a></p>
+<p class="nav"><a href="/"><- home</a></p>
 {body}
 </main>
 <p class="accred"><a href="https://github.com/comfysage/evergarden">evergarden</a> summer</p>
