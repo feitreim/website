@@ -38,7 +38,7 @@ pub fn build() {
     posts.sort_by(compare_posts);
 
     for post in &posts {
-        let page = render_page(&post.title, &md_to_html(&post.body));
+        let page = render_page(&post.title, &md_to_html(&post.body), true);
         fs::write(format!("{OUT_DIR}/{POSTS_DIR}/{}.html", post.slug), page).unwrap();
     }
 
@@ -168,7 +168,7 @@ fn render_index(posts: &[Post]) -> String {
     } else {
         format!("{main_html}\n{list}")
     };
-    render_page("feitreim.com", &body)
+    render_page("feitreim.com", &body, false)
 }
 
 // --- markdown + math ----------------------------------------------------
@@ -321,7 +321,12 @@ fn escape(s: &str) -> String {
 
 // --- html template ------------------------------------------------------
 
-fn render_page(title: &str, body: &str) -> String {
+fn render_page(title: &str, body: &str, nav: bool) -> String {
+    let nav = if nav {
+        "<p class=\"nav\"><a href=\"/\"><- home</a></p>\n"
+    } else {
+        ""
+    };
     format!(
         r#"<!DOCTYPE html>
 <html lang="en">
@@ -334,14 +339,14 @@ fn render_page(title: &str, body: &str) -> String {
 </head>
 <body>
 <main>
-<p class="nav"><a href="/"><- home</a></p>
-{body}
+{nav}{body}
 </main>
 <p class="accred"><a href="https://github.com/comfysage/evergarden">evergarden</a> summer</p>
 </body>
 </html>
 "#,
         title = escape(title),
+        nav = nav,
         body = body
     )
 }
