@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -25,10 +26,14 @@ async fn main() {
 
 // --- generation ---------------------------------------------------------
 
+type DateKey = (u16, u8, u8);
+
 struct Post {
     title: String,
     slug: String,
     body: String,
+    date: Option<String>,
+    date_key: Option<DateKey>,
 }
 
 fn build() {
@@ -42,7 +47,7 @@ fn build() {
         .filter(|p| p.extension().is_some_and(|x| x == "md"))
         .filter_map(read_post)
         .collect();
-    posts.sort_by(|a, b| a.title.to_lowercase().cmp(&b.title.to_lowercase()));
+    posts.sort_by(compare_posts);
 
     for post in &posts {
         let page = render_page(&post.title, &md_to_html(&post.body));
@@ -59,7 +64,9 @@ fn build() {
 
 /// Copy verbatim assets (fonts, etc.) from static/ into the output dir.
 fn copy_static() {
-    let Ok(entries) = fs::read_dir(STATIC_DIR) else { return };
+    let Ok(entries) = fs::read_dir(STATIC_DIR) else {
+        return;
+    };
     for entry in entries.filter_map(Result::ok) {
         let path = entry.path();
         if path.is_file() {
@@ -77,7 +84,28 @@ fn read_post(path: PathBuf) -> Option<Post> {
     let stem = path.file_stem()?.to_string_lossy().into_owned();
     let title = title_from_markdown(&body).unwrap_or_else(|| humanize(&stem));
     let slug = slugify(&title);
-    Some(Post { title, slug, body })
+    let date = date_from_markdown(&body);
+    let date_key = date.as_deref().and_then(parse_sortable_date);
+    Some(Post {
+        title,
+        slug,
+        body,
+        date,
+        date_key,
+    })
+}
+
+fn compare_posts(a: &Post, b: &Post) -> Ordering {
+    match (a.date_key, b.date_key) {
+        (Some(a_date), Some(b_date)) => b_date.cmp(&a_date).then_with(|| compare_titles(a, b)),
+        (Some(_), None) => Ordering::Less,
+        (None, Some(_)) => Ordering::Greater,
+        (None, None) => compare_titles(a, b),
+    }
+}
+
+fn compare_titles(a: &Post, b: &Post) -> Ordering {
+    a.title.to_lowercase().cmp(&b.title.to_lowercase())
 }
 
 /// The post title is its first level-1 heading (`# ...`); the filename is only a fallback.
@@ -87,13 +115,58 @@ fn title_from_markdown(src: &str) -> Option<String> {
         .find_map(|line| line.strip_prefix("# ").map(|t| t.trim().to_string()))
 }
 
+/// Optional post dates use a markdown line like `### date: 29 Nov, 2025`.
+fn date_from_markdown(src: &str) -> Option<String> {
+    src.lines().map(str::trim).find_map(|line| {
+        let date = line.strip_prefix("### date:")?.trim();
+        (!date.is_empty()).then(|| date.to_string())
+    })
+}
+
+fn parse_sortable_date(date: &str) -> Option<DateKey> {
+    let mut parts = date.split_whitespace();
+    let day = parts.next()?.parse::<u8>().ok()?;
+    let month = month_number(parts.next()?.trim_end_matches(','))?;
+    let year = parts.next()?.parse::<u16>().ok()?;
+
+    if day == 0 || day > 31 || parts.next().is_some() {
+        return None;
+    }
+
+    Some((year, month, day))
+}
+
+fn month_number(month: &str) -> Option<u8> {
+    match month {
+        "Jan" => Some(1),
+        "Feb" => Some(2),
+        "Mar" => Some(3),
+        "Apr" => Some(4),
+        "May" => Some(5),
+        "Jun" => Some(6),
+        "Jul" => Some(7),
+        "Aug" => Some(8),
+        "Sep" => Some(9),
+        "Oct" => Some(10),
+        "Nov" => Some(11),
+        "Dec" => Some(12),
+        _ => None,
+    }
+}
+
 fn render_index(posts: &[Post]) -> String {
     let mut list = String::from("<h2>Posts</h2>\n<ul class=\"posts\">\n");
     for p in posts {
+        let date = p
+            .date
+            .as_ref()
+            .map(|date| format!(" <span class=\"post-date\">{}</span>", escape(date)))
+            .unwrap_or_default();
         list.push_str(&format!(
-            "  <li><a href=\"{POSTS_DIR}/{}.html\">{}</a></li>\n",
+            "  <li><a href=\"{POSTS_DIR}/{}.html\">{}</a>{}</li>\n",
             p.slug,
-            escape(&p.title)
+            escape(&p.title),
+            date
         ));
     }
     list.push_str("</ul>\n");
@@ -203,7 +276,9 @@ fn slugify(stem: &str) -> String {
 }
 
 fn escape(s: &str) -> String {
-    s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
 }
 
 // --- html template ------------------------------------------------------
@@ -298,6 +373,7 @@ h1 { margin-top: 0; }
 .nav a { color: var(--muted); font-size: 0.9rem; }
 ul.posts { list-style: none; padding: 0; }
 ul.posts li { margin: 0.4rem 0; font-size: 1.05rem; }
+.post-date { color: var(--muted); font-size: 0.9em; margin-left: 0.4rem; }
 code {
   font-family: 'Berkeley Mono', ui-monospace, Menlo, monospace; font-size: 0.9em;
   background: #f0f0ee; padding: 0.1em 0.3em; border-radius: 3px;
@@ -346,13 +422,25 @@ async fn handle(mut stream: TcpStream) {
 }
 
 async fn resolve(path: &str) -> (&'static str, &'static str, Vec<u8>) {
-    let clean = path.split('?').next().unwrap_or("/").trim_start_matches('/');
+    let clean = path
+        .split('?')
+        .next()
+        .unwrap_or("/")
+        .trim_start_matches('/');
     if clean.contains("..") {
         return ("403 Forbidden", "text/plain", b"forbidden".to_vec());
     }
     let mut file = PathBuf::from(OUT_DIR);
-    file.push(if clean.is_empty() { "index.html" } else { clean });
-    if tokio::fs::metadata(&file).await.map(|m| m.is_dir()).unwrap_or(false) {
+    file.push(if clean.is_empty() {
+        "index.html"
+    } else {
+        clean
+    });
+    if tokio::fs::metadata(&file)
+        .await
+        .map(|m| m.is_dir())
+        .unwrap_or(false)
+    {
         file.push("index.html");
     }
     match tokio::fs::read(&file).await {

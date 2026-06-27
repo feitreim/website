@@ -19,6 +19,9 @@ cargo build --release
 Writing a new post = drop a `.md` file in `posts/` and re-run `build`. The title
 comes from the post's first `# ` heading; the URL slug is that title, lowercased
 and hyphenated. (If a post has no `# ` heading, the filename is used instead.)
+Optionally add a line like `### date: 29 Nov, 2025`; that date appears next to
+the title on the main page, and parseable `DD Mon, YYYY` dates sort posts
+newest-first before undated or unparseable posts.
 
 ## Deploying to a VPS
 
