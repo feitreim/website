@@ -163,7 +163,7 @@ fn render_index(posts: &[Post]) -> String {
             .map(|date| format!(" <span class=\"post-date\">{}</span>", escape(date)))
             .unwrap_or_default();
         list.push_str(&format!(
-            "  <li>{}<a href=\"{POSTS_DIR}/{}.html\">{}</a></li>\n",
+            "  <li>{} <a href=\"{POSTS_DIR}/{}.html\">{}</a></li>\n",
             date,
             p.slug,
             escape(&p.title),
