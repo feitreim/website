@@ -391,7 +391,11 @@ blockquote {
   border-left: 3px solid var(--border); margin-left: 0; padding-left: 1rem; color: var(--muted);
 }
 .katex { color: var(--fg); }
-.katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; }
+.katex-display {
+  overflow-x: auto; overflow-y: hidden;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.75rem 1rem; margin: 1.25rem 0;
+}
 .accred {
   position: fixed; bottom: 0.6rem; right: 0.75rem;
   font-size: 0.72rem; color: var(--muted);
