@@ -180,7 +180,7 @@ fn render_index(posts: &[Post]) -> String {
     } else {
         format!("{main_html}\n{list}")
     };
-    render_page("Finn's Blog", &body)
+    render_page("feitreim.com", &body)
 }
 
 // --- markdown + math ----------------------------------------------------
