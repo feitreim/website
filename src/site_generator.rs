@@ -242,7 +242,11 @@ fn render_math(span: &str) -> String {
 fn math_to_svg(latex: &str, display: bool) -> Option<String> {
     let nodes = ratex_parser::parse(latex).ok()?;
     let layout_opts = LayoutOptions {
-        style: if display { MathStyle::Display } else { MathStyle::Text },
+        style: if display {
+            MathStyle::Display
+        } else {
+            MathStyle::Text
+        },
         color: Color::from_hex(MATH_COLOR)?,
         ..Default::default()
     };
@@ -260,7 +264,12 @@ fn math_to_svg(latex: &str, display: bool) -> Option<String> {
             ..Default::default()
         },
     );
-    Some(frame_math(svg, list.height + list.depth, list.depth, display))
+    Some(frame_math(
+        svg,
+        list.height + list.depth,
+        list.depth,
+        display,
+    ))
 }
 
 /// Size the SVG in `em` (so it scales with surrounding text) and, for inline math, drop it by
@@ -277,7 +286,11 @@ fn frame_math(svg: String, total_em: f64, depth_em: f64, display: bool) -> Strin
 }
 
 fn style_svg(svg: String, style: &str) -> String {
-    svg.replacen("<svg ", &format!("<svg class=\"math\" style=\"{style}\" "), 1)
+    svg.replacen(
+        "<svg ",
+        &format!("<svg class=\"math\" style=\"{style}\" "),
+        1,
+    )
 }
 
 // --- string helpers -----------------------------------------------------
