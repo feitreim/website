@@ -390,6 +390,7 @@ pre code { background: none; padding: 0; }
 blockquote {
   border-left: 3px solid var(--border); margin-left: 0; padding-left: 1rem; color: var(--muted);
 }
+.katex { color: var(--fg); }
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.25rem 0; }
 .accred {
   position: fixed; bottom: 0.6rem; right: 0.75rem;
