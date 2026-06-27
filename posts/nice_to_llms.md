@@ -1,4 +1,4 @@
-# You should be nicer to your LLMs
+# You Should be Nicer to The Models
 ### date: 14 Apr, 2026
 
 
