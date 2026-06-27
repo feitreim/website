@@ -13,7 +13,7 @@ familiarity with the basic concepts behind them, let's just think about that
 primary function, language modeling. The first stage of training an LLM, usually
 called pre-training, involves training the model to look at a sequence of
 tokens, derived from text, and then predict the next token. Usually this looks
-like (<predicted token>):
+like (\<predicted token\>):
 ```
 The quick brown fox jumps over the lazy <dog>
 2 + 2 = <4>
