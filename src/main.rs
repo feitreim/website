@@ -308,7 +308,7 @@ fn render_page(title: &str, body: &str) -> String {
 <p class="nav"><a href="/">home</a></p>
 {body}
 </main>
-<p class="accred"><a href="https://github.com/sainnhe/everforest">everforest</a> light</p>
+<p class="accred"><a href="https://github.com/comfysage/evergarden">evergarden</a> summer</p>
 </body>
 </html>
 "#,
@@ -359,10 +359,10 @@ const STYLE: &str = r#"
   src: url('/BerkeleyMono-Black-Oblique.woff2') format('woff2');
   font-weight: 900; font-style: italic; font-display: swap;
 }
-/* Everforest Light (Medium) */
+/* Evergarden Summer */
 :root {
-  --fg: #5c6a72; --muted: #829181; --link: #3a94c5; --bg: #fffbef;
-  --surface: #f2efdf; --border: #bec5b2;
+  --fg: #2b3034; --muted: #829084; --link: #8294ad; --bg: #f5efe6;
+  --surface: #e6e1d3; --border: #ceccbd;
 }
 * { box-sizing: border-box; }
 body {
