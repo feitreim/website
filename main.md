@@ -1,6 +1,7 @@
 # Hi!
 
-I am going to write about whatever I want, but that probably means machine learning or programming.
+I'm Finn Eitreim. I'd like to write about machine learning, 'AI', safety, and
+math. I also really enjoy writing Rust and contributing to open source.
 
 You can reach me at feitreim@gmail.com.
 
