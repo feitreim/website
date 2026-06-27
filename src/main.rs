@@ -16,7 +16,7 @@ async fn main() {
             serve(port).await;
         }
         Some("build") | None => build(),
-        Some(other) => eprintln!("unknown command: {other}\nusage: blog [build | serve [port]]"),
+        Some(other) => eprintln!("unknown command: {other}\nusage: website [build | serve [port]]"),
     }
 }
 
