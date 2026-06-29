@@ -440,8 +440,8 @@ blockquote {
 }
 img { max-width: 100%; height: auto; display: block; }
 figure {
-  margin: 1.5rem 0; padding: 0.5rem; background: var(--surface);
-  border: 1px solid var(--border); border-radius: 6px;
+  width: fit-content; max-width: 100%; margin: 1.5rem auto; padding: 0.5rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
 }
 figure img { margin: 0 auto; border-radius: 3px; }
 figcaption { color: var(--muted); font-size: 0.85rem; text-align: center; margin-top: 0.5rem; }

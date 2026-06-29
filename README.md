@@ -60,3 +60,17 @@ ssh <your-vps> 'systemctl restart website'
 ```
 
 its aliased as `update-website`
+
+### Deploying static assets (images, fonts)
+
+`static/` is gitignored, so its files don't reach the VPS via `git push`. Use
+the helper to rsync them up and restart the service (which rebuilds `dist/`):
+
+```sh
+./deploy-static.sh            # uses the `website` ssh host alias
+./deploy-static.sh other-host # or target a different host
+```
+
+Web-bound images belong in `static/` as already-compressed `.webp` (the server
+maps the `webp` extension to `image/webp`); reference them from a post as
+`/<name>.webp`.
