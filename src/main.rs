@@ -95,6 +95,7 @@ fn content_type(path: &Path) -> &'static str {
         Some("woff") => "font/woff",
         Some("png") => "image/png",
         Some("jpg") | Some("jpeg") => "image/jpeg",
+        Some("webp") => "image/webp",
         _ => "application/octet-stream",
     }
 }

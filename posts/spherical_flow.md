@@ -1,5 +1,6 @@
 # Spherical Flow Models
-### date: 20 Feb, 2026
+
+### date: 29 Jun, 2026
 
 ## Inspiration
 
@@ -57,9 +58,17 @@ I am also using an architecture based on JiT, Just Image Transformers, from [[3]
 
 ## Results
 
-I had this idea this morning, so results are still very much in progress, I am
-very compute limited, so if you have any resources I could use, please reach
-out.
+I've been able to run some hyperparameter sweeps on CIFAR, trying to dial in the learning rate and such before doing some bigger runs.
+
+<figure>
+  <img src="/sweep_outputs_baseline.webp" alt="Sample grid from the baseline noise-to-image coupling" loading="lazy">
+  <figcaption>Baseline: standard noise-to-image coupling.</figcaption>
+</figure>
+
+<figure>
+  <img src="/sweep_outputs_mine.webp" alt="Sample grid from the jumpstart coupling" loading="lazy">
+  <figcaption>Mine: jumpstart coupling from a noised decoder output.</figcaption>
+</figure>
 
 ## Sources
 
