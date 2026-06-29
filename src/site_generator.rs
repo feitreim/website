@@ -439,10 +439,7 @@ blockquote {
   border-left: 3px solid var(--border); margin-left: 0; padding-left: 1rem; color: var(--muted);
 }
 img { max-width: 100%; height: auto; display: block; }
-figure {
-  width: fit-content; max-width: 100%; margin: 1.5rem auto; padding: 0.5rem;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 6px;
-}
+figure { width: fit-content; max-width: 100%; margin: 1.5rem auto; }
 figure img { margin: 0 auto; border-radius: 3px; }
 figcaption { color: var(--muted); font-size: 0.85rem; text-align: center; margin-top: 0.5rem; }
 svg.math { vertical-align: middle; }
