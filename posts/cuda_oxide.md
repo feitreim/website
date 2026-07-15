@@ -238,6 +238,7 @@ top of gemm_match and its TMA loop, trimmed to the interesting parts:
      ...
      ld.local.b64  %rd150, [%rd213];            // and again before the TMA copies
      cp.async.bulk.tensor.2d... [%rd33], ..., [%rd150];
+
 ```
 
 The pick-1-of-N match statement has to become braches, loading from a table in
