@@ -14,11 +14,11 @@ it significantly.
 
 ## Reasoning
 
-Standard image autoencoders produce latents in unconstrained space, which makes
+Standard e autoencoders produce latents in unconstrained space, which makes
 generative modelling of the latent distribution harder. The sphere encoder
 constrains the latent to lie on a hypersphere by RMS-normalising the latent. As
-shown in [[1]](#ref-1), their system produces great-looking results with a latent space
-that is well-suited for sampling.
+shown in [[1]](#ref-1), their system produces great-looking results with a
+latent space that is well-suited for sampling.
 
 A criticism I have seen of their approach is that their model is HUGE, for
 ImageNet it needs ~1B parameters to achieve their results. That said, I think
