@@ -218,7 +218,7 @@ This is pretty reasonable/to be expected, cuda-oxide is very new and still in th
 
 After looking into the PTX, the issue is pretty clear. Here's the
 top of gemm_match and its TMA loop, trimmed to the interesting parts:
-```
+```rust
  .visible .entry gemm_match(
      .local .align 8 .b8  __local_depot1[64];   // 64 bytes of per-thread "stack"
      ...
@@ -317,24 +317,24 @@ explain why:
 > them away, and the depot simply never gets allocated.
 > 
 > Here's the same TMA loop as before, compiled with both passes:
-> 
-> ```
-> $L__BB1_37:                               // top of the k-loop
->     setp.eq.b32  %p40, %r10, 0;           // stage == 0?
->     setp.eq.b32  %p41, %r10, 1;           // stage == 1?
->     setp.eq.b32  %p42, %r10, 2;           // stage == 2?
->     mov.b64   %rd92, __shared_mem_19;
->     mov.b64   %rd93, __shared_mem_18;
->     selp.b64  %rd94, %rd93, %rd92, %p42;  // 3-deep select chain picks the
->     mov.b64   %rd95, __shared_mem_17;     // barrier address in registers —
->     selp.b64  %rd96, %rd95, %rd94, %p41;  // no branch, no memory
->     mov.b64   %rd97, __shared_mem_16;
->     selp.b64  %rd98, %rd97, %rd96, %p40;
-> $L__BB1_38:                               // the mbarrier spin loop
->     { ... mbarrier.try_wait.parity.shared::cta.b64 p, [%rd98], %r128; ... }
->     @%p44 bra  $L__BB1_38;                // polls a register-held address
-> ```
-> 
+ 
+```
+$L__BB1_37:                               // top of the k-loop
+    setp.eq.b32  %p40, %r10, 0;           // stage == 0?
+    setp.eq.b32  %p41, %r10, 1;           // stage == 1?
+    setp.eq.b32  %p42, %r10, 2;           // stage == 2?
+    mov.b64   %rd92, __shared_mem_19;
+    mov.b64   %rd93, __shared_mem_18;
+    selp.b64  %rd94, %rd93, %rd92, %p42;  // 3-deep select chain picks the
+    mov.b64   %rd95, __shared_mem_17;     // barrier address in registers —
+    selp.b64  %rd96, %rd95, %rd94, %p41;  // no branch, no memory
+    mov.b64   %rd97, __shared_mem_16;
+    selp.b64  %rd98, %rd97, %rd96, %p40;
+$L__BB1_38:                               // the mbarrier spin loop
+    { ... mbarrier.try_wait.parity.shared::cta.b64 p, [%rd98], %r128; ... }
+    @%p44 bra  $L__BB1_38;                // polls a register-held address
+```
+ 
 > No `__local_depot`, no `ld.local` — and look closer: no `brx.idx` either. The
 > match compiled to the *third* selection mechanism, a chain of selects, and
 > that's why it now beats `gemm_branch` rather than merely catching up to it.
