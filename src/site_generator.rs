@@ -174,69 +174,33 @@ fn render_index(posts: &[Post]) -> String {
 // --- markdown + math ----------------------------------------------------
 
 /// Convert markdown to HTML, rendering LaTeX math to self-contained SVG at build time.
+/// The parser recognizes `$...$` / `$$...$$` itself (ENABLE_MATH), so a `$` inside a
+/// code fence or inline code stays literal instead of opening a math span.
 fn md_to_html(src: &str) -> String {
-    let (protected, math) = protect_math(src);
-
-    use pulldown_cmark::{html, Options, Parser};
+    use pulldown_cmark::{html, Event, Options, Parser};
     let mut opts = Options::empty();
     opts.insert(Options::ENABLE_TABLES);
     opts.insert(Options::ENABLE_STRIKETHROUGH);
     opts.insert(Options::ENABLE_FOOTNOTES);
-    let parser = Parser::new_ext(&protected, opts);
+    opts.insert(Options::ENABLE_MATH);
+    let parser = Parser::new_ext(src, opts).map(|event| match event {
+        Event::InlineMath(latex) => Event::Html(render_math(&latex, false).into()),
+        Event::DisplayMath(latex) => Event::Html(render_math(&latex, true).into()),
+        other => other,
+    });
     let mut html_out = String::new();
     html::push_html(&mut html_out, parser);
-
-    restore_math(html_out, &math)
+    html_out
 }
 
-/// Replace every `$...$` / `$$...$$` span with an inert placeholder token so the
-/// markdown parser can't mangle the LaTeX (e.g. `_`, `\\`, `*` inside formulas).
-fn protect_math(src: &str) -> (String, Vec<String>) {
-    let chars: Vec<char> = src.chars().collect();
-    let n = chars.len();
-    let mut out = String::with_capacity(src.len());
-    let mut spans = Vec::new();
-    let mut i = 0;
-
-    while i < n {
-        if chars[i] == '$' {
-            let display = i + 1 < n && chars[i + 1] == '$';
-            let delim = if display { 2 } else { 1 };
-            let mut j = i + delim;
-            let end = loop {
-                if j >= n {
-                    break n; // unterminated: swallow to end of input
-                }
-                if chars[j] == '$' && (!display || (j + 1 < n && chars[j + 1] == '$')) {
-                    break j + delim;
-                }
-                j += 1;
-            };
-            spans.push(chars[i..end.min(n)].iter().collect());
-            out.push_str(&format!("MATHSPAN{}END", spans.len() - 1));
-            i = end;
-        } else {
-            out.push(chars[i]);
-            i += 1;
-        }
-    }
-    (out, spans)
-}
-
-fn restore_math(mut html: String, spans: &[String]) -> String {
-    for (idx, raw) in spans.iter().enumerate() {
-        html = html.replace(&format!("MATHSPAN{idx}END"), &render_math(raw));
-    }
-    html
-}
-
-/// Render one protected `$...$` / `$$...$$` span to a self-contained inline SVG so pages
-/// ship no KaTeX CSS/JS and pull nothing from a CDN. Unparseable LaTeX falls back to the
-/// raw source shown as code.
-fn render_math(span: &str) -> String {
-    let display = span.starts_with("$$");
-    let latex = span.trim_matches('$');
-    math_to_svg(latex, display).unwrap_or_else(|| format!("<code>{}</code>", escape(span)))
+/// Render one math span to a self-contained inline SVG so pages ship no KaTeX CSS/JS
+/// and pull nothing from a CDN. Unparseable LaTeX falls back to the raw source shown
+/// as code.
+fn render_math(latex: &str, display: bool) -> String {
+    math_to_svg(latex, display).unwrap_or_else(|| {
+        let delim = if display { "$$" } else { "$" };
+        format!("<code>{}</code>", escape(&format!("{delim}{latex}{delim}")))
+    })
 }
 
 fn math_to_svg(latex: &str, display: bool) -> Option<String> {

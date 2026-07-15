@@ -218,7 +218,7 @@ This is pretty reasonable/to be expected, cuda-oxide is very new and still in th
 
 After looking into the PTX, the issue is pretty clear. Here's the
 top of gemm_match and its TMA loop, trimmed to the interesting parts:
-```rust
+```
  .visible .entry gemm_match(
      .local .align 8 .b8  __local_depot1[64];   // 64 bytes of per-thread "stack"
      ...
