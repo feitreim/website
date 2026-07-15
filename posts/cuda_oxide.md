@@ -55,7 +55,7 @@ is **full** of pointer foot guns.
 
 There are some rough edges still, as to be expected because cuda-oxide is still
 in alpha (very usable with that in mind). Not every kernel is going to be able
-to be all safe code, there are lots of capabilities that are _currently_ locked
+to only have safe code, there are lots of capabilities that are _currently_ locked
 behind unsafe, but I'm sure the plan is to add safe APIs for everything. One
 thing that has recieved a (mostly) safe API are barriers. The barrier API
 originally looked like:
@@ -216,7 +216,7 @@ performance, at $M\times N\times K=8192^3$:
 
 This is pretty reasonable/to be expected, cuda-oxide is very new and still in the alpha stage, but it does make me wonder if theres anything we can do about it. First we probably should look further into the cause though.
 
-After looking into the PTX with Claude, the issue is pretty clear. Here's the
+After looking into the PTX, the issue is pretty clear. Here's the
 top of gemm_match and its TMA loop, trimmed to the interesting parts:
 ```
  .visible .entry gemm_match(
@@ -239,6 +239,7 @@ top of gemm_match and its TMA loop, trimmed to the interesting parts:
      ld.local.b64  %rd150, [%rd213];            // and again before the TMA copies
      cp.async.bulk.tensor.2d... [%rd33], ..., [%rd150];
 ```
+
 The pick-1-of-N match statement has to become braches, loading from a table in
 memory, or a chain of selects, and here we get the worst case. Instead of the
 simple branched case, where each branch just has its own set of values that can
